@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEA Neon Lab</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Orbitron',sans-serif;
+}
+
+body{
+    background: radial-gradient(circle at top, #0f0026, #000814 60%);
+    color:white;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    width:95%;
+    max-width:420px;
+    background:rgba(0,0,0,0.6);
+    border-radius:25px;
+    padding:20px;
+    backdrop-filter: blur(15px);
+    box-shadow:0 0 30px #ff00ff55;
+}
+
+h1{
+    text-align:center;
+    font-size:22px;
+    color:#00ffff;
+    text-shadow:0 0 15px #00ffff;
+    margin-bottom:15px;
+}
+
+.tabs{
+    display:flex;
+    justify-content:space-around;
+    margin-bottom:15px;
+}
+
+.tabs button{
+    background:none;
+    border:none;
+    color:#888;
+    font-size:12px;
+    cursor:pointer;
+}
+
+.tabs button.active{
+    color:#ff00ff;
+    text-shadow:0 0 10px #ff00ff;
+}
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+.display{
+    background:#000;
+    padding:15px;
+    border-radius:15px;
+    margin-bottom:15px;
+    font-size:24px;
+    text-align:right;
+    box-shadow:0 0 15px #00ffff inset;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+}
+
+button{
+    padding:15px;
+    border:none;
+    border-radius:15px;
+    font-size:16px;
+    cursor:pointer;
+    background:#111;
+    color:white;
+    box-shadow:0 0 10px #00ffff44;
+}
+
+button:hover{
+    box-shadow:0 0 20px #ff00ff;
+    transform:scale(1.05);
+}
+
+.bigbtn{
+    grid-column:span 4;
+    background:linear-gradient(90deg,#ff00ff,#00ffff);
+    color:black;
+    font-weight:bold;
+}
+
+input, select, textarea{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:10px;
+    border:none;
+    background:#111;
+    color:white;
+    box-shadow:0 0 10px #00ffff33 inset;
+}
+
+textarea{
+    height:100px;
+    resize:none;
+}
+
+.result{
+    margin-top:10px;
+    padding:10px;
+    background:#000;
+    border-radius:10px;
+    box-shadow:0 0 10px #ff00ff inset;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>TEA NEON LAB</h1>
+
+<div class="tabs">
+<button class="active" onclick="openTab(0)">Kalkulator</button>
+<button onclick="openTab(1)">Astrofisika</button>
+<button onclick="openTab(2)">Konverter</button>
+<button onclick="openTab(3)">Catatan</button>
+</div>
+
+<!-- KALKULATOR -->
+<div class="section active">
+<div class="display" id="display">0</div>
+
+<div class="grid">
+<button onclick="add('sin(')">sin</button>
+<button onclick="add('cos(')">cos</button>
+<button onclick="add('tan(')">tan</button>
+<button onclick="add('/')">÷</button>
+
+<button onclick="add('7')">7</button>
+<button onclick="add('8')">8</button>
+<button onclick="add('9')">9</button>
+<button onclick="add('*')">×</button>
+
+<button onclick="add('4')">4</button>
+<button onclick="add('5')">5</button>
+<button onclick="add('6')">6</button>
+<button onclick="add('-')">-</button>
+
+<button onclick="add('1')">1</button>
+<button onclick="add('2')">2</button>
+<button onclick="add('3')">3</button>
+<button onclick="add('+')">+</button>
+
+<button onclick="clearDisplay()">C</button>
+<button onclick="add('0')">0</button>
+<button onclick="add('.')">.</button>
+<button onclick="calculate()">=</button>
+</div>
+</div>
+
+<!-- ASTROFISIKA -->
+<div class="section">
+<select id="astroType">
+<option value="time">Dilatasi Waktu</option>
+</select>
+
+<input type="number" id="speed" placeholder="Kecepatan (0 - 0.99c)">
+<input type="number" id="duration" placeholder="Durasi (Tahun)">
+
+<button class="bigbtn" onclick="relativity()">ANALISIS</button>
+<div class="result" id="astroResult"></div>
+</div>
+
+<!-- KONVERTER -->
+<div class="section">
+<input type="number" id="meterInput" placeholder="Masukkan Meter">
+<button class="bigbtn" onclick="convert()">KONVERSI KE KM</button>
+<div class="result" id="convertResult"></div>
+</div>
+
+<!-- CATATAN -->
+<div class="section">
+<textarea id="note" placeholder="Tulis catatan rahasia..."></textarea>
+<button class="bigbtn" onclick="saveNote()">SIMPAN</button>
+</div>
+
+</div>
+
+<script>
+function openTab(index){
+    document.querySelectorAll('.tabs button').forEach(btn=>btn.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(sec=>sec.classList.remove('active'));
+    document.querySelectorAll('.tabs button')[index].classList.add('active');
+    document.querySelectorAll('.section')[index].classList.add('active');
+}
+
+let display=document.getElementById('display');
+let current="";
+
+function add(val){
+    current+=val;
+    display.innerText=current;
+}
+
+function clearDisplay(){
+    current="";
+    display.innerText="0";
+}
+
+function calculate(){
+    try{
+        let result=eval(current);
+        display.innerText=result;
+        current=result.toString();
+    }catch{
+        display.innerText="Error";
+    }
+}
+
+function relativity(){
+    let v=parseFloat(document.getElementById('speed').value);
+    let t=parseFloat(document.getElementById('duration').value);
+
+    if(v>0 && v<1){
+        let gamma=1/Math.sqrt(1-(v*v));
+        let result=t/gamma;
+        document.getElementById('astroResult').innerText=
+        "Waktu dirasakan astronot: "+result.toFixed(2)+" tahun";
+    }else{
+        document.getElementById('astroResult').innerText="Masukkan kecepatan valid!";
+    }
+}
+
+function convert(){
+    let m=parseFloat(document.getElementById('meterInput').value);
+    let km=m/1000;
+    document.getElementById('convertResult').innerText=km+" km";
+}
+
+function saveNote(){
+    let note=document.getElementById('note').value;
+    localStorage.setItem("tea_note",note);
+    alert("Tersimpan!");
+}
+
+document.getElementById('note').value=localStorage.getItem("tea_note") || "";
+</script>
+
+</body>
+  </html>
